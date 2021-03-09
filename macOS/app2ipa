@@ -1,0 +1,22 @@
+dir=$(ls -l)
+for file in $dir
+do
+    if [[ $file =~ \.app$ ]]
+    then
+        app_name=${file%.*}  
+        echo "pack:$app_name"
+
+        rm -rf $app_name
+        mkdir $app_name
+        mkdir $app_name/Payload
+        cp -r $app_name.app $app_name/Payload/$app_name.app
+        cd $app_name
+        zip -r $app_name.ipa Payload # $app_name/iTunesArtwork
+        cp $app_name.ipa ../
+        cd ..
+        rm -rf $app_name
+
+    fi
+done
+
+exit 0

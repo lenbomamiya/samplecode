@@ -1,0 +1,25 @@
+#SHA-1 value of 'Apple Development: Yingbai Chen (QNZD29800M)' in Keychain
+strSign='651D14192913A164D349F25B73FB500AA100FE00'
+
+#Prepare the new mobileprovision (Profile)
+#Note the certificate above has been checked also in *.mobileprovision
+security cms -D -i *.mobileprovision > provision.plist
+/usr/libexec/PlistBuddy -x -c 'Print :Entitlements' provision.plist > entitlements.plist
+
+#Replace mobileprovision (Profile) and resign the App
+unzip *.ipa
+cp *.mobileprovision Payload/*.app/embedded.mobileprovision
+
+rm -rf Payload/*.app/_CodeSignature
+#/usr/bin/codesign -f -s $strSign --resource-rules "Payload/*.app/ResourceRules.plist" "Payload/*.app"
+/usr/bin/codesign -f -s $strSign --entitlements entitlements.plist Payload/*.app
+
+#Package Payload folder to be resigned.ipa
+zip -qr resigned.ipa Payload
+
+#Remove tmp files
+rm provision.plist
+rm entitlements.plist
+rm -rf Payload
+
+exit 0
